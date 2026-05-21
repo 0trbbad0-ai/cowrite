@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CoWrite — Honest feedback for serious songwriters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Epilogue:wght@300;400;500&display=swap" rel="stylesheet" />
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0e0e0e; --bg2: #161616; --bg3: #1f1f1f;
+    --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+    --text: #f0ede8; --text2: #9a9690; --text3: #5a5652;
+    --accent: #c8b89a; --accent2: #8a7a66;
+    --green-text: #8fbe84; --amber-text: #c9963a; --red-text: #d46060;
+    --radius: 12px; --radius-sm: 8px;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Epilogue', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.6; }
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2rem; border-bottom: 0.5px solid var(--border); position: sticky; top: 0; background: rgba(14,14,14,0.92); backdrop-filter: blur(12px); z-index: 50; }
+  .logo { font-family: 'Playfair Display', serif; font-size: 20px; letter-spacing: -0.3px; }
+  .logo em { font-style: italic; color: var(--accent); }
+  .nav-badge { font-size: 10px; font-weight: 500; padding: 3px 10px; border-radius: 20px; border: 0.5px solid var(--border2); color: var(--text2); letter-spacing: 1px; text-transform: uppercase; }
+  .hero { max-width: 620px; margin: 0 auto; padding: 4rem 2rem 2.5rem; text-align: center; }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: 44px; font-weight: 400; line-height: 1.12; letter-spacing: -1.5px; margin-bottom: 1rem; }
+  .hero h1 em { font-style: italic; color: var(--accent); }
+  .hero p { font-size: 15px; color: var(--text2); font-weight: 300; line-height: 1.7; max-width: 480px; margin: 0 auto; }
+  .form-wrap { max-width: 680px; margin: 0 auto; padding: 0 1.5rem 4rem; display: flex; flex-direction: column; gap: 1.25rem; }
+  .field { display: flex; flex-direction: column; gap: 0.5rem; }
+  .field-label { font-size: 12px; font-weight: 500; color: var(--text2); letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+  .field-label .opt { font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--text3); font-size: 12px; }
+  textarea { width: 100%; padding: 1rem 1.125rem; background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: 'Epilogue', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; resize: vertical; transition: border-color 0.15s; }
+  textarea:focus { outline: none; border-color: var(--border2); }
+  textarea::placeholder { color: var(--text3); }
+  .upload-zone { border: 0.5px dashed var(--border2); border-radius: var(--radius); padding: 1.75rem; text-align: center; cursor: pointer; position: relative; transition: background 0.15s; }
+  .upload-zone:hover { background: var(--bg2); }
+  .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-icon { font-size: 22px; color: var(--text3); margin-bottom: 0.5rem; }
+  .upload-main { font-size: 14px; color: var(--text2); }
+  .upload-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
+  .file-chip { display: none; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); padding: 0.625rem 0.875rem; background: var(--bg2); border-radius: var(--radius-sm); border: 0.5px solid var(--border); }
+  .btn-primary { padding: 1rem 2rem; background: var(--accent); color: #0e0e0e; border: none; border-radius: var(--radius); font-family: 'Epilogue', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.15s; margin-top: 0.5rem; }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-secondary { padding: 0.625rem 1.25rem; background: transparent; color: var(--text2); border: 0.5px solid var(--border2); border-radius: var(--radius-sm); font-family: 'Epilogue', sans-serif; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.15s; }
+  .btn-secondary:hover { background: var(--bg2); }
+  .error-box { display: none; max-width: 680px; margin: 0 auto 1rem; padding: 0.875rem 1.25rem; background: rgba(212,96,96,0.1); border: 0.5px solid rgba(212,96,96,0.3); border-radius: var(--radius); font-size: 14px; color: var(--red-text); }
+  .error-box.visible { display: block; }
+  .loading-view { display: none; flex-direction: column; align-items: center; gap: 1rem; padding: 4rem 2rem; text-align: center; }
+  .loading-view.visible { display: flex; }
+  .spinner { width: 36px; height: 36px; border: 1.5px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 15px; color: var(--text2); font-weight: 300; }
+  .loading-sub { font-size: 12px; color: var(--text3); }
+  .results-view { display: none; max-width: 680px; margin: 0 auto; padding: 0 1.5rem 4rem; flex-direction: column; gap: 1rem; }
+  .results-view.visible { display: flex; }
+  .results-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 0 0.75rem; border-bottom: 0.5px solid var(--border); }
+  .results-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 400; }
+  .scores-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+  .score-card { background: var(--bg2); border-radius: var(--radius-sm); padding: 0.875rem 1rem; border: 0.5px solid var(--border); }
+  .score-label { font-size: 10px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+  .score-row { display: flex; align-items: center; gap: 8px; }
+  .score-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .dot-green { background: var(--green-text); } .dot-amber { background: var(--amber-text); } .dot-red { background: var(--red-text); }
+  .score-val { font-size: 20px; font-weight: 500; }
+  .score-val span { font-size: 12px; font-weight: 300; color: var(--text3); }
+  .section-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .section-head { padding: 0.875rem 1.25rem; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; gap: 8px; background: var(--bg3); }
+  .section-icon { font-size: 15px; color: var(--text2); }
+  .section-name { font-size: 13px; font-weight: 500; flex: 1; }
+  .status-pill { font-size: 10px; font-weight: 500; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.3px; text-transform: uppercase; }
+  .pill-strong { background: rgba(74,124,63,0.2); color: var(--green-text); border: 0.5px solid rgba(74,124,63,0.3); }
+  .pill-developing { background: rgba(122,94,42,0.2); color: var(--amber-text); border: 0.5px solid rgba(122,94,42,0.3); }
+  .pill-needs { background: rgba(122,42,42,0.2); color: var(--red-text); border: 0.5px solid rgba(122,42,42,0.3); }
+  .section-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+  .note { display: flex; flex-direction: column; gap: 6px; }
+  .quoted-line { font-size: 13px; font-style: italic; color: var(--text2); padding: 0.5rem 0.875rem; border-left: 1.5px solid var(--accent2); background: var(--bg3); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+  .note-text { font-size: 14px; line-height: 1.65; color: var(--text); font-weight: 300; }
+  .direction { font-size: 13px; color: var(--text2); display: flex; align-items: flex-start; gap: 8px; padding: 0.625rem 0.875rem; background: rgba(200,184,154,0.06); border: 0.5px solid rgba(200,184,154,0.15); border-radius: var(--radius-sm); line-height: 1.5; }
+  .direction-arrow { color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+  .paywall-wrap { position: relative; border-radius: var(--radius); overflow: hidden; border: 0.5px solid var(--border); }
+  .paywall-blur { filter: blur(5px); pointer-events: none; user-select: none; opacity: 0.4; padding: 1.25rem; }
+  .paywall-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; background: linear-gradient(to bottom, rgba(14,14,14,0) 0%, rgba(14,14,14,0.97) 35%); padding: 2rem; text-align: center; }
+  .paywall-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 400; }
+  .paywall-title em { font-style: italic; color: var(--accent); }
+  .paywall-sub { font-size: 14px; color: var(--text2); font-weight: 300; max-width: 360px; line-height: 1.6; }
+  .pricing-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; }
+  .pricing-card { background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 1.25rem; cursor: pointer; transition: border-color 0.15s; text-align: left; display: flex; flex-direction: column; gap: 4px; }
+  .pricing-card:hover { border-color: var(--accent2); }
+  .pricing-card.selected { border-color: var(--accent); }
+  .pricing-tag { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text3); margin-bottom: 4px; }
+  .pricing-tag.highlight { color: var(--accent); }
+  .pricing-price { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 400; color: var(--text); letter-spacing: -0.5px; }
+  .pricing-price span { font-size: 13px; font-weight: 300; font-family: 'Epilogue', sans-serif; color: var(--text2); }
+  .pricing-desc { font-size: 12px; color: var(--text2); font-weight: 300; line-height: 1.4; margin-top: 4px; }
+  .unlock-btn { width: 100%; max-width: 400px; padding: 0.875rem 2rem; background: var(--accent); color: #0e0e0e; border: none; border-radius: var(--radius); font-family: 'Epilogue', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; display: none; }
+  .unlock-btn.visible { display: block; }
+  .unlock-btn:hover { opacity: 0.88; }
+  .preview-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; padding-bottom: 0.5rem; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; gap: 6px; }
+  .preview-label::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">Co<em>write</em></div>
+  <div class="nav-badge">Beta</div>
+</nav>
+
+<div id="input-view">
+  <div class="hero">
+    <h1>Feedback that <em>actually</em><br>makes you better.</h1>
+    <p>Paste your lyrics, drop a rough recording, and tell us what you were going for. Get honest, specific notes — the kind a great co-writer would give.</p>
+  </div>
+  <div class="form-wrap">
+    <div class="field">
+      <label class="field-label">Lyrics</label>
+      <textarea id="lyrics" rows="10" placeholder="Paste your full lyrics here..."></textarea>
+    </div>
+    <div class="field">
+      <label class="field-label">Recording <span class="opt">— voice memo or rough demo</span></label>
+      <div class="upload-zone" id="upload-zone">
+        <input type="file" id="audio-file" accept="audio/*" />
+        <div class="upload-icon">↑</div>
+        <div class="upload-main">Drop your recording here or click to browse</div>
+        <div class="upload-sub">MP3, WAV, M4A up to 25MB</div>
+      </div>
+      <div class="file-chip" id="file-chip"><span>♪</span><span id="file-name-display"></span></div>
+    </div>
+    <div class="field">
+      <label class="field-label">Your intent</label>
+      <textarea id="intent" rows="4" placeholder="What were you going for? What mood, genre, or feeling did you want to express? What's the goal of this song?"></textarea>
+    </div>
+    <button class="btn-primary" id="analyse-btn" onclick="analyse()">Analyse my song →</button>
+  </div>
+</div>
+
+<div class="error-box" id="error-box"></div>
+
+<div class="loading-view" id="loading-view">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">Reading your lyrics...</div>
+  <div class="loading-sub">Going deep. This takes 20–40 seconds.</div>
+</div>
+
+<div class="results-view" id="results-view"></div>
+
+<script>
+const STRIPE_KEY = 'pk_test_51TZJWzPldDFckhb1y6jt5faWXpYYjmwbagJ1WsjrMlYaRbf1sRstf3S9tkRWD81wVxs6YZ3SigHgbKW4DIYUFr8c00Vwv25DSO';
+const PRICE_MONTHLY = 'price_1TZJdlPldDFckhb1lO6B13Ye';
+const PRICE_SINGLE = 'price_1TZJioPldDFckhb1a0PIoLXF';
+const stripe = Stripe(STRIPE_KEY);
+let selectedPlan = null;
+let fullResultData = null;
+
+document.getElementById('audio-file').addEventListener('change', function() {
+  if (this.files && this.files[0]) {
+    document.getElementById('file-name-display').textContent = this.files[0].name;
+    document.getElementById('file-chip').style.display = 'flex';
+    document.getElementById('upload-zone').style.display = 'none';
+  }
+});
+
+function showError(msg) {
+  const box = document.getElementById('error-box');
+  box.textContent = msg;
+  box.classList.add('visible');
+  setTimeout(() => box.classList.remove('visible'), 6000);
+}
+
+async function analyse() {
+  const lyrics = document.getElementById('lyrics').value.trim();
+  const intent = document.getElementById('intent').value.trim();
+  const file = document.getElementById('audio-file').files[0];
+  if (!lyrics) { showError('Please paste your lyrics first.'); return; }
+  if (!intent) { showError('Tell us what you were going for — this shapes the feedback.'); return; }
+
+  document.getElementById('input-view').style.display = 'none';
+  document.getElementById('loading-view').classList.add('visible');
+  document.getElementById('analyse-btn').disabled = true;
+
+  const msgs = ['Reading your lyrics line by line...','Mapping the emotional arc...','Finding where attention drops...','Measuring against your intent...','Putting the report together...'];
+  let mi = 0;
+  const ltEl = document.getElementById('loading-text');
+  const ltInt = setInterval(() => { mi = (mi+1) % msgs.length; ltEl.textContent = msgs[mi]; }, 3500);
+
+  try {
+    const res = await fetch('/api/analyse', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        lyrics,
+        intent,
+        hasRecording: !!file,
+        recordingName: file ? file.name : null
+      })
+    });
+
+    clearInterval(ltInt);
+    if (!res.ok) throw new Error('API error');
+    fullResultData = await res.json();
+    renderResults(fullResultData, false);
+  } catch(err) {
+    clearInterval(ltInt);
+    document.getElementById('loading-view').classList.remove('visible');
+    document.getElementById('input-view').style.display = 'block';
+    document.getElementById('analyse-btn').disabled = false;
+    showError('Something went wrong. Please try again.');
+  }
+}
+
+function dotClass(s) { return s === 'strong' ? 'dot-green' : s === 'needs work' ? 'dot-red' : 'dot-amber'; }
+function pill(s) {
+  if (s === 'strong') return `<span class="status-pill pill-strong">Strong</span>`;
+  if (s === 'needs work') return `<span class="status-pill pill-needs">Needs work</span>`;
+  return `<span class="status-pill pill-developing">Developing</span>`;
+}
+
+function renderResults(data, unlocked) {
+  document.getElementById('loading-view').classList.remove('visible');
+  const view = document.getElementById('results-view');
+
+  const scoresHtml = Object.entries(data.scores).map(([k,s]) => `
+    <div class="score-card">
+      <div class="score-label">${k.replace('_',' ')}</div>
+      <div class="score-row"><div class="score-dot ${dotClass(s.status)}"></div><div class="score-val">${s.value}<span>/10</span></div></div>
+    </div>`).join('');
+
+  const previewHtml = `
+    <div class="preview-label">Free preview</div>
+    <div class="section-card">
+      <div class="section-head"><span class="section-icon">◈</span><span class="section-name">Overall verdict</span>${pill(data.scores.goal_alignment.status)}</div>
+      <div class="section-body">
+        <div class="note"><div class="note-text">${data.preview.verdict}</div></div>
+        <div class="note"><div class="quoted-line">${data.preview.top_line}</div></div>
+        <div class="note"><div class="direction"><span class="direction-arrow">→</span>${data.preview.weak_spot}</div></div>
+      </div>
+    </div>`;
+
+  let sectionsHtml = '';
+  if (unlocked) {
+    sectionsHtml = data.sections.map(sec => `
+      <div class="section-card">
+        <div class="section-head"><span class="section-icon">◈</span><span class="section-name">${sec.title}</span>${pill(sec.status)}</div>
+        <div class="section-body">${sec.notes.map(n => `
+          <div class="note">
+            ${n.quoted_line ? `<div class="quoted-line">"${n.quoted_line}"</div>` : ''}
+            <div class="note-text">${n.observation}</div>
+            ${n.direction ? `<div class="direction"><span class="direction-arrow">→</span>${n.direction}</div>` : ''}
+          </div>`).join('')}
+        </div>
+      </div>`).join('');
+  } else {
+    const blurred = data.sections.map(sec => `
+      <div class="section-card" style="margin-bottom:8px">
+        <div class="section-head"><span class="section-icon">◈</span><span class="section-name">${sec.title}</span>${pill(sec.status)}</div>
+        <div class="section-body">
+          <div class="note-text" style="color:transparent;background:rgba(255,255,255,0.08);border-radius:4px;">████████████████████████████████████████████████████████████████████████████████████████████████</div>
+          <div class="direction" style="opacity:0.3"><span class="direction-arrow">→</span>████████████████████████████████████████████████</div>
+        </div>
+      </div>`).join('');
+
+    sectionsHtml = `
+      <div class="paywall-wrap">
+        <div class="paywall-blur">${blurred}</div>
+        <div class="paywall-overlay">
+          <div class="paywall-title">There's <em>a lot</em> more here.</div>
+          <div class="paywall-sub">Six deep sections covering your lyrics line by line, emotional arc, listener attention, melody, structure, and exactly how close you got to your goal.</div>
+          <div class="pricing-options">
+            <div class="pricing-card" id="pc-single" onclick="selectPlan('single')">
+              <div class="pricing-tag">One song</div>
+              <div class="pricing-price">$2.99<span> once</span></div>
+              <div class="pricing-desc">Full report for this song only</div>
+            </div>
+            <div class="pricing-card" id="pc-monthly" onclick="selectPlan('monthly')">
+              <div class="pricing-tag highlight">Best value</div>
+              <div class="pricing-price">$9.99<span>/mo</span></div>
+              <div class="pricing-desc">Unlimited analyses, cancel anytime</div>
+            </div>
+          </div>
+          <button class="unlock-btn" id="unlock-btn" onclick="checkout()">Unlock full report →</button>
+          <div style="font-size:12px;color:var(--text3);margin-top:-4px">Secure payment via Stripe</div>
+        </div>
+      </div>`;
+  }
+
+  view.innerHTML = `
+    <div class="results-header">
+      <div class="results-title">Your feedback</div>
+      <button class="btn-secondary" onclick="resetForm()">← Analyse another song</button>
+    </div>
+    <div class="scores-grid">${scoresHtml}</div>
+    ${previewHtml}
+    ${sectionsHtml}`;
+
+  view.classList.add('visible');
+  view.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function selectPlan(plan) {
+  selectedPlan = plan;
+  document.querySelectorAll('.pricing-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('pc-' + plan).classList.add('selected');
+  document.getElementById('unlock-btn').classList.add('visible');
+}
+
+async function checkout() {
+  if (!selectedPlan) return;
+  const priceId = selectedPlan === 'monthly' ? PRICE_MONTHLY : PRICE_SINGLE;
+  try {
+    const { error } = await stripe.redirectToCheckout({
+      lineItems: [{ price: priceId, quantity: 1 }],
+      mode: selectedPlan === 'monthly' ? 'subscription' : 'payment',
+      successUrl: window.location.origin + '/?paid=true',
+      cancelUrl: window.location.href,
+    });
+    if (error) showError(error.message);
+  } catch(e) { showError('Payment failed to load. Please try again.'); }
+}
+
+function resetForm() {
+  document.getElementById('results-view').classList.remove('visible');
+  document.getElementById('results-view').innerHTML = '';
+  document.getElementById('lyrics').value = '';
+  document.getElementById('intent').value = '';
+  document.getElementById('audio-file').value = '';
+  document.getElementById('file-chip').style.display = 'none';
+  document.getElementById('upload-zone').style.display = 'block';
+  document.getElementById('analyse-btn').disabled = false;
+  document.getElementById('input-view').style.display = 'block';
+  selectedPlan = null; fullResultData = null;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
