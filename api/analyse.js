@@ -121,10 +121,14 @@ Respond ONLY with this exact JSON structure, no markdown, no extra text:
     const clean = raw.replace(/```json|```/g, '').trim();
     const jsonMatch = clean.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      return res.status(500).json({ error: 'No JSON found', raw: clean.substring(0, 300) });
+      return res.status(200).json({ debug: 'no_match', raw: clean.substring(0, 500) });
     }
-    const result = JSON.parse(jsonMatch[0]);
-    return res.status(200).json(result);
+    try {
+      const result = JSON.parse(jsonMatch[0]);
+      return res.status(200).json(result);
+    } catch(parseErr) {
+      return res.status(200).json({ debug: 'parse_failed', raw: jsonMatch[0].substring(0, 500) });
+    }
 
   } catch (err) {
     return res.status(500).json({ error: err.message });
