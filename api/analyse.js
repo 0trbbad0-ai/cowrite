@@ -106,8 +106,9 @@ Respond ONLY with this exact JSON structure, no markdown, no extra text:
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
         max_tokens: 1200,
-        system,
-        messages: [{ role: 'user', content }]
+temperature: 0,
+system,
+messages: [{ role: 'user', content }]
       })
     });
 
@@ -117,18 +118,17 @@ Respond ONLY with this exact JSON structure, no markdown, no extra text:
       return res.status(500).json({ error: 'API error', detail: data });
     }
 
-    const raw = data.content.map(b => b.text || '').join('');
-    const clean = raw.replace(/```json|```/g, '').trim();
-    const jsonMatch = clean.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      return res.status(200).json({ debug: 'no_match', raw: clean.substring(0, 500) });
-    }
-    try {
-      const result = JSON.parse(jsonMatch[0]);
-      return res.status(200).json(result);
-    } catch(parseErr) {
-      return res.status(200).json({ debug: 'parse_failed', raw: jsonMatch[0].substring(0, 500) });
-    }
+    const raw = data.content?.[0]?.text || '';
+
+try {
+  const result = JSON.parse(raw);
+  return res.status(200).json(result);
+} catch (err) {
+  return res.status(200).json({
+    debug: 'parse_failed',
+    raw
+  });
+}
 
   } catch (err) {
     return res.status(500).json({ error: err.message });
