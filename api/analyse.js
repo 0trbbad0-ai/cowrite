@@ -5,95 +5,64 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
   try {
     const { lyrics, intent, hasRecording, recordingName } = req.body;
 
     if (!lyrics || !intent) {
-      return res.status(400).json({ error: 'Missing lyrics or intent' });
+      return res.status(400).json({
+        error: 'Missing lyrics or intent'
+      });
     }
 
     let content = [];
+
     if (hasRecording) {
-      content.push({ type: 'text', text: `Recording uploaded: "${recordingName}". Factor in vocal delivery, melody, tone and energy in your feedback.` });
+      content.push({
+        type: 'text',
+        text: `Recording uploaded: "${recordingName}". Factor in vocal delivery, melody, tone and energy in your feedback.`
+      });
     }
-    content.push({ type: 'text', text: `LYRICS:\n${lyrics}\n\nINTENT:\n${intent}` });
 
-    const system = `You are a brutally honest, expert co-writer and music critic. Give specific, non-replicable feedback on this song. Every note must apply to THIS song only — no generic advice.
+    content.push({
+      type: 'text',
+      text: `LYRICS:\n${lyrics}\n\nINTENT:\n${intent}`
+    });
 
-Rules:
-- Quote specific lines when referencing lyrics
-- Be honest — don't validate lazily
-- Never suggest replacement lyrics — diagnose and give direction instead
-- Measure everything against the songwriter's stated intent
-- Keep each observation concise but specific
+    const system = `You are a brutally honest, expert co-writer and music critic.
 
-Respond ONLY with this exact JSON structure, no markdown, no extra text:
+Give specific, non-generic feedback on THIS exact song only.
+
+IMPORTANT:
+- Return ONLY valid JSON
+- No markdown
+- No code blocks
+- No commentary outside JSON
+- Escape quotes properly
+- Never use trailing commas
+
+JSON format:
 {
   "scores": {
-    "lyrics": { "value": 0-10, "status": "strong|developing|needs work" },
-    "melody": { "value": 0-10, "status": "strong|developing|needs work" },
-    "delivery": { "value": 0-10, "status": "strong|developing|needs work" },
-    "structure": { "value": 0-10, "status": "strong|developing|needs work" },
-    "goal_alignment": { "value": 0-10, "status": "strong|developing|needs work" }
+    "lyrics": { "value": 0, "status": "developing" },
+    "melody": { "value": 0, "status": "developing" },
+    "delivery": { "value": 0, "status": "developing" },
+    "structure": { "value": 0, "status": "developing" },
+    "goal_alignment": { "value": 0, "status": "developing" }
   },
   "preview": {
-    "verdict": "2 sentence honest overall read of the song.",
-    "top_line": "Strongest line and one sentence why.",
-    "weak_spot": "Weakest element and one sentence why."
+    "verdict": "",
+    "top_line": "",
+    "weak_spot": ""
   },
-  "sections": [
-    {
-      "id": "lyrics",
-      "title": "Lyric analysis",
-      "status": "strong|developing|needs work",
-      "notes": [
-        { "quoted_line": "exact line or null", "observation": "specific observation — 1-2 sentences", "direction": "clear direction for the songwriter — 1 sentence" }
-      ]
-    },
-    {
-      "id": "arc",
-      "title": "Emotional arc",
-      "status": "strong|developing|needs work",
-      "notes": [
-        { "quoted_line": null, "observation": "how emotion moves across the song — 1-2 sentences", "direction": "what to push or pull — 1 sentence" }
-      ]
-    },
-    {
-      "id": "attention",
-      "title": "Listener attention",
-      "status": "strong|developing|needs work",
-      "notes": [
-        { "quoted_line": "line where attention drops or null", "observation": "where and why a listener zones out — 1-2 sentences", "direction": "how to recapture them — 1 sentence" }
-      ]
-    },
-    {
-      "id": "melody",
-      "title": "Melody & vocal delivery",
-      "status": "strong|developing|needs work",
-      "notes": [
-        { "quoted_line": null, "observation": "melodic shape, hook strength, delivery — 1-2 sentences", "direction": "how to push it further — 1 sentence" }
-      ]
-    },
-    {
-      "id": "structure",
-      "title": "Structure & flow",
-      "status": "strong|developing|needs work",
-      "notes": [
-        { "quoted_line": null, "observation": "does the structure serve the song — 1-2 sentences", "direction": "most valuable structural adjustment — 1 sentence" }
-      ]
-    },
-    {
-      "id": "intent",
-      "title": "Goal alignment",
-      "status": "strong|developing|needs work",
-      "notes": [
-        { "quoted_line": null, "observation": "how well song achieves stated intent — 1-2 sentences", "direction": "single most important thing to close the gap — 1 sentence" }
-      ]
-    }
-  ]
+  "sections": []
 }`;
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -105,32 +74,70 @@ Respond ONLY with this exact JSON structure, no markdown, no extra text:
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
-        max_tokens: 1200,
-temperature: 0,
-system,
-messages: [{ role: 'user', content }]
+        max_tokens: 2200,
+        temperature: 0,
+        system,
+        messages: [
+          {
+            role: 'user',
+            content
+          }
+        ]
       })
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      return res.status(500).json({ error: 'API error', detail: data });
+      console.error(data);
+
+      return res.status(500).json({
+        error: 'Anthropic API error',
+        detail: data
+      });
     }
 
-    const raw = data.content?.[0]?.text || '';
+    const raw =
+      data?.content
+        ?.map(block => block.text || '')
+        .join('') || '';
 
-try {
-  const result = JSON.parse(raw);
-  return res.status(200).json(result);
-} catch (err) {
-  return res.status(200).json({
-    debug: 'parse_failed',
-    raw
-  });
-}
+    try {
+      const cleaned = raw
+        .replace(/```json/g, '')
+        .replace(/```/g, '')
+        .trim();
+
+      const start = cleaned.indexOf('{');
+      const end = cleaned.lastIndexOf('}');
+
+      if (start === -1 || end === -1) {
+        throw new Error('No JSON found');
+      }
+
+      const jsonString = cleaned.slice(start, end + 1);
+
+      const result = JSON.parse(jsonString);
+
+      return res.status(200).json(result);
+
+    } catch (parseError) {
+
+      console.error('PARSE ERROR:', parseError);
+      console.error('RAW RESPONSE:', raw);
+
+      return res.status(500).json({
+        error: 'Failed to parse AI response',
+        raw: raw.substring(0, 4000)
+      });
+    }
 
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+
+    console.error(err);
+
+    return res.status(500).json({
+      error: err.message
+    });
   }
 }
