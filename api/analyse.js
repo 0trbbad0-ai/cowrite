@@ -119,7 +119,11 @@ Respond ONLY with valid JSON, no markdown, no preamble, no explanation. Exact st
 
     const raw = data.content.map(b => b.text || '').join('');
     const clean = raw.replace(/```json|```/g, '').trim();
-    const result = JSON.parse(clean);
+    const jsonMatch = clean.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      return res.status(500).json({ error: 'No JSON found', raw: clean.substring(0, 300) });
+    }
+    const result = JSON.parse(jsonMatch[0]);
     return res.status(200).json(result);
 
   } catch (err) {
