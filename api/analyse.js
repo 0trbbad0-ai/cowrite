@@ -14,13 +14,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const {
-      lyrics,
-      intent,
-      hasRecording,
-      recordingName,
-      style // 👈 NEW (for AI personalities)
-    } = req.body;
+    const { lyrics, intent, hasRecording, recordingName } = req.body;
 
     if (!lyrics || !intent) {
       return res.status(400).json({
@@ -28,32 +22,12 @@ export default async function handler(req, res) {
       });
     }
 
-    // -----------------------------
-    // 🎭 AI PERSONALITIES
-    // -----------------------------
-    const personas = {
-      pop: `You are a pop songwriting coach. Focus on hooks, catchiness, replay value, and simplicity.`,
-
-      rap: `You are a rap songwriting coach. Focus on flow, rhyme schemes, punchlines, cadence, and wordplay.`,
-
-      indie: `You are an indie songwriting coach. Focus on emotional depth, imagery, vulnerability, and authenticity.`,
-
-      drill: `You are a drill music coach. Focus on energy, rhythm, aggression, and delivery.`,
-
-      default: `You are a brutally honest expert co-writer and music critic.`
-    };
-
-    const persona = personas[style] || personas.default;
-
-    // -----------------------------
-    // BUILD INPUT
-    // -----------------------------
     let content = [];
 
     if (hasRecording) {
       content.push({
         type: 'text',
-        text: `Recording uploaded: "${recordingName}". Factor in vocal delivery, melody, tone and energy.`
+        text: `Recording uploaded: "${recordingName}". Factor in vocal delivery, melody, tone and energy in your feedback.`
       });
     }
 
@@ -62,23 +36,19 @@ export default async function handler(req, res) {
       text: `LYRICS:\n${lyrics}\n\nINTENT:\n${intent}`
     });
 
-    // -----------------------------
-    // SYSTEM PROMPT
-    // -----------------------------
-    const system = `${persona}
+    const system = `You are a brutally honest, expert co-writer and music critic.
 
-You MUST respond ONLY in valid JSON.
+Give specific, non-generic feedback on THIS exact song only.
 
-Rules:
+IMPORTANT:
+- Return ONLY valid JSON
 - No markdown
-- No explanations outside JSON
 - No code blocks
-- No trailing commas
-- Be brutally honest but specific
-- Always reference real lyrics when possible
+- No commentary outside JSON
+- Escape quotes properly
+- Never use trailing commas
 
-Return EXACT JSON format:
-
+JSON format:
 {
   "scores": {
     "lyrics": { "value": 0, "status": "developing" },
@@ -95,9 +65,6 @@ Return EXACT JSON format:
   "sections": []
 }`;
 
-    // -----------------------------
-    // CALL CLAUDE
-    // -----------------------------
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -107,10 +74,15 @@ Return EXACT JSON format:
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
-        max_tokens: 1400, // 👈 more stable than 2200
+        max_tokens: 2200,
         temperature: 0,
         system,
-        messages: [{ role: 'user', content }]
+        messages: [
+          {
+            role: 'user',
+            content
+          }
+        ]
       })
     });
 
@@ -118,17 +90,18 @@ Return EXACT JSON format:
 
     if (!response.ok) {
       console.error(data);
+
       return res.status(500).json({
         error: 'Anthropic API error',
         detail: data
       });
     }
 
-    const raw = data?.content?.map(b => b.text || '').join('') || '';
+    const raw =
+      data?.content
+        ?.map(block => block.text || '')
+        .join('') || '';
 
-    // -----------------------------
-    // SAFE JSON PARSING
-    // -----------------------------
     try {
       const cleaned = raw
         .replace(/```json/g, '')
@@ -143,21 +116,24 @@ Return EXACT JSON format:
       }
 
       const jsonString = cleaned.slice(start, end + 1);
+
       const result = JSON.parse(jsonString);
 
       return res.status(200).json(result);
 
     } catch (parseError) {
+
       console.error('PARSE ERROR:', parseError);
       console.error('RAW RESPONSE:', raw);
 
       return res.status(500).json({
         error: 'Failed to parse AI response',
-        raw: raw.substring(0, 3000)
+        raw: raw.substring(0, 4000)
       });
     }
 
   } catch (err) {
+
     console.error(err);
 
     return res.status(500).json({
