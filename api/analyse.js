@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   try {
     const { lyrics, intent, hasRecording, recordingName } = req.body;
 
-    if (!lyrics || !intent) {
+    if (!lyrics || !intent) {return res.status(200).json({ debug: 'No JSON found', raw: clean.substring(0, 500) });
       return res.status(400).json({ error: 'Missing lyrics or intent' });
     }
 
