@@ -1,3 +1,4 @@
+export const maxDuration = 60;
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -105,7 +106,7 @@ Respond ONLY with valid JSON, no markdown, no preamble, no explanation. Exact st
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
-        max_tokens: 2000,
+        max_tokens: 1200,
         system,
         messages: [{ role: 'user', content }]
       })
