@@ -1,4 +1,5 @@
 export const maxDuration = 60;
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -16,22 +17,20 @@ export default async function handler(req, res) {
 
     let content = [];
     if (hasRecording) {
-      content.push({ type: 'text', text: `A rough recording named "${recordingName}" has been uploaded. Use it to assess vocal delivery, melodic feel, tone, energy, and where the performance strengthens or undersells the song.` });
+      content.push({ type: 'text', text: `Recording uploaded: "${recordingName}". Factor in vocal delivery, melody, tone and energy in your feedback.` });
     }
-    content.push({ type: 'text', text: `LYRICS:\n${lyrics}\n\nSONGWRITER'S INTENT:\n${intent}` });
+    content.push({ type: 'text', text: `LYRICS:\n${lyrics}\n\nINTENT:\n${intent}` });
 
-    const system = `You are a brutally honest, deeply knowledgeable music critic and co-writer. You have encyclopedic knowledge of songwriting craft across all genres. You give feedback that is specific, honest, and genuinely useful — the kind a seasoned producer or co-writer gives a serious artist who wants to improve, not validation.
+    const system = `You are a brutally honest, expert co-writer and music critic. Give specific, non-replicable feedback on this song. Every note must apply to THIS song only — no generic advice.
 
-RULES — follow all of these without exception:
-- Quote specific lines. Never speak in generalities about "the lyrics" without referencing exact lines.
-- Be honest. If something doesn't work, say so and explain precisely why it doesn't land.
-- Never suggest replacement lyrics. AI-written lyrics are not good enough. Instead, diagnose the problem precisely and give the songwriter a clear direction to take it themselves — not a rewrite, a path.
-- Every note must be non-replicable. It must only apply to THIS song. Generic feedback that could apply to any song is a failure.
-- Measure everything against the songwriter's stated intent. Their goal is the benchmark.
-- Do not over-praise. Earn every positive note. Empty validation destroys trust.
-- Be direct. Treat the songwriter as a serious artist who can handle real feedback.
+Rules:
+- Quote specific lines when referencing lyrics
+- Be honest — don't validate lazily
+- Never suggest replacement lyrics — diagnose and give direction instead
+- Measure everything against the songwriter's stated intent
+- Keep each observation concise but specific
 
-Respond ONLY with valid JSON, no markdown, no preamble, no explanation. Exact structure:
+Respond ONLY with this exact JSON structure, no markdown, no extra text:
 {
   "scores": {
     "lyrics": { "value": 0-10, "status": "strong|developing|needs work" },
@@ -41,9 +40,9 @@ Respond ONLY with valid JSON, no markdown, no preamble, no explanation. Exact st
     "goal_alignment": { "value": 0-10, "status": "strong|developing|needs work" }
   },
   "preview": {
-    "verdict": "2-3 sentence honest overall read. Where the song sits right now and what it could genuinely be. No sugarcoating.",
-    "top_line": "The single strongest line in the song and one sentence on why it works.",
-    "weak_spot": "The single weakest element right now and one sentence on why it hurts the song."
+    "verdict": "2 sentence honest overall read of the song.",
+    "top_line": "Strongest line and one sentence why.",
+    "weak_spot": "Weakest element and one sentence why."
   },
   "sections": [
     {
@@ -51,7 +50,7 @@ Respond ONLY with valid JSON, no markdown, no preamble, no explanation. Exact st
       "title": "Lyric analysis",
       "status": "strong|developing|needs work",
       "notes": [
-        { "quoted_line": "exact line or null", "observation": "specific honest observation", "direction": "concrete path for the songwriter — not a rewrite" }
+        { "quoted_line": "exact line or null", "observation": "specific observation — 1-2 sentences", "direction": "clear direction for the songwriter — 1 sentence" }
       ]
     },
     {
@@ -59,7 +58,7 @@ Respond ONLY with valid JSON, no markdown, no preamble, no explanation. Exact st
       "title": "Emotional arc",
       "status": "strong|developing|needs work",
       "notes": [
-        { "quoted_line": null, "observation": "how emotion builds, plateaus, or collapses across the full song", "direction": "what to push or pull to strengthen it" }
+        { "quoted_line": null, "observation": "how emotion moves across the song — 1-2 sentences", "direction": "what to push or pull — 1 sentence" }
       ]
     },
     {
@@ -67,7 +66,7 @@ Respond ONLY with valid JSON, no markdown, no preamble, no explanation. Exact st
       "title": "Listener attention",
       "status": "strong|developing|needs work",
       "notes": [
-        { "quoted_line": "line where attention drops or null", "observation": "exactly where a real listener zones out and the precise reason", "direction": "what would recapture them without losing the song's identity" }
+        { "quoted_line": "line where attention drops or null", "observation": "where and why a listener zones out — 1-2 sentences", "direction": "how to recapture them — 1 sentence" }
       ]
     },
     {
@@ -75,7 +74,7 @@ Respond ONLY with valid JSON, no markdown, no preamble, no explanation. Exact st
       "title": "Melody & vocal delivery",
       "status": "strong|developing|needs work",
       "notes": [
-        { "quoted_line": null, "observation": "melodic shape, memorability, hook strength, where delivery lands or undersells", "direction": "how to push the melody or performance further" }
+        { "quoted_line": null, "observation": "melodic shape, hook strength, delivery — 1-2 sentences", "direction": "how to push it further — 1 sentence" }
       ]
     },
     {
@@ -83,7 +82,7 @@ Respond ONLY with valid JSON, no markdown, no preamble, no explanation. Exact st
       "title": "Structure & flow",
       "status": "strong|developing|needs work",
       "notes": [
-        { "quoted_line": null, "observation": "does the structure serve this song specifically or box it in", "direction": "the specific structural adjustment most worth considering" }
+        { "quoted_line": null, "observation": "does the structure serve the song — 1-2 sentences", "direction": "most valuable structural adjustment — 1 sentence" }
       ]
     },
     {
@@ -91,7 +90,7 @@ Respond ONLY with valid JSON, no markdown, no preamble, no explanation. Exact st
       "title": "Goal alignment",
       "status": "strong|developing|needs work",
       "notes": [
-        { "quoted_line": null, "observation": "honest assessment of how well the song achieves what the writer said they wanted", "direction": "the single most important thing to close the gap between intention and execution" }
+        { "quoted_line": null, "observation": "how well song achieves stated intent — 1-2 sentences", "direction": "single most important thing to close the gap — 1 sentence" }
       ]
     }
   ]
