@@ -200,7 +200,8 @@ async function analyse() {
     clearInterval(ltInt);
     if (!res.ok) throw new Error('API error');
     fullResultData = await res.json();
-    renderResults(fullResultData, false);
+console.log(fullResultData);
+renderResults(fullResultData, false);
   } catch(err) {
     clearInterval(ltInt);
     document.getElementById('loading-view').classList.remove('visible');
