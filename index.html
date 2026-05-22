@@ -450,7 +450,6 @@ async function doSignup() {
   if (password.length < 8) { errEl.textContent = 'Password must be at least 8 characters.'; errEl.classList.add('visible'); return; }
   const btn = document.getElementById('signup-btn'); btn.disabled = true; btn.textContent = 'Creating account...';
   try {
-    const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'signup', email, password, full_name: name, phone, notifications }) });
     const d = await r.json();
     if (d.error) { errEl.textContent = d.error; errEl.classList.add('visible'); return; }
     saveSession({ ...d.user, plan: 'free' }, d.access_token);
@@ -465,15 +464,12 @@ async function doLogin() {
   const errEl = document.getElementById('login-error'); errEl.classList.remove('visible');
   const btn = document.getElementById('login-btn'); btn.disabled = true; btn.textContent = 'Logging in...';
   try {
-    const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'login', email, password }) });
     const d = await r.json();
     if (d.error) { errEl.textContent = d.error; errEl.classList.add('visible'); return; }
     saveSession(d.user, d.access_token); showPage('app'); loadPortfolio();
   } catch(e) { errEl.textContent = 'Something went wrong.'; errEl.classList.add('visible'); }
   finally { btn.disabled = false; btn.textContent = 'Log in →'; }
 }
-, body: JSON.stringify({ action: 'google', redirect: window.location.origin }) });
-  const d = await r.json(); if (d.url) window.location.href = d.url;
 }
 
 function doLogout() {
