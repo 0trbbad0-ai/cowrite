@@ -21,7 +21,7 @@
   body { font-family: 'Epilogue', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
   /* NAV */
-  nav { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2rem; border-bottom: 0.5px solid var(--border); position: sticky; top: 0; background: rgba(14,14,14,0.92); backdrop-filter: blur(12px); z-index: 50; }
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2rem 1.25rem 4rem; border-bottom: 0.5px solid var(--border); position: sticky; top: 0; background: rgba(14,14,14,0.92); backdrop-filter: blur(12px); z-index: 50; }
   .logo { font-family: 'Playfair Display', serif; font-size: 20px; letter-spacing: -0.3px; cursor: pointer; }
   .logo em { font-style: italic; color: var(--accent); }
   .nav-right { display: flex; align-items: center; gap: 12px; }
@@ -32,11 +32,37 @@
   .nav-user { font-size: 13px; color: var(--text2); }
   .nav-badge { font-size: 10px; font-weight: 500; padding: 3px 10px; border-radius: 20px; border: 0.5px solid var(--border2); color: var(--text2); letter-spacing: 1px; text-transform: uppercase; }
 
+  /* HAMBURGER */
+  .hamburger { position: fixed; top: 18px; left: 1.25rem; z-index: 200; background: none; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 6px; border-radius: var(--radius-sm); transition: background 0.15s; }
+  .hamburger:hover { background: var(--bg3); }
+  .hamburger span { display: block; width: 20px; height: 1.5px; background: var(--text2); border-radius: 2px; transition: all 0.2s; }
+  .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(4.5px, 4.5px); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(4.5px, -4.5px); }
+
+  /* SIDEBAR BACKDROP */
+  .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
+  .sidebar-backdrop.visible { display: block; }
+
+  /* SIDEBAR */
+  .sidebar { width: 260px; position: fixed; top: 0; left: 0; height: 100vh; background: var(--bg2); border-right: 0.5px solid var(--border2); display: flex; flex-direction: column; z-index: 100; transform: translateX(-100%); transition: transform 0.25s ease; }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-top { padding: 1.25rem; padding-top: 4rem; flex: 1; overflow-y: auto; }
+  .sidebar-section { margin-bottom: 1.5rem; }
+  .sidebar-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text3); margin-bottom: 0.75rem; }
+  .sidebar-item { padding: 0.625rem 0.75rem; border-radius: var(--radius-sm); cursor: pointer; font-size: 13px; color: var(--text2); transition: background 0.15s; display: flex; flex-direction: column; gap: 2px; }
+  .sidebar-item:hover { background: var(--bg3); color: var(--text); }
+  .sidebar-item-date { font-size: 11px; color: var(--text3); }
+  .sidebar-empty { font-size: 13px; color: var(--text3); font-weight: 300; line-height: 1.5; padding: 0.5rem 0; }
+  .sidebar-bottom { padding: 1rem 1.25rem; border-top: 0.5px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+  .sidebar-footer-btn { background: none; border: none; color: var(--text3); font-family: 'Epilogue', sans-serif; font-size: 13px; cursor: pointer; text-align: left; padding: 0.375rem 0.5rem; border-radius: var(--radius-sm); transition: color 0.15s, background 0.15s; }
+  .sidebar-footer-btn:hover { color: var(--text2); background: var(--bg3); }
+
   /* PAGES */
   .page { display: none; }
   .page.active { display: block; }
 
-  /* AUTH PAGE */
+  /* AUTH */
   .auth-wrap { max-width: 420px; margin: 4rem auto; padding: 0 1.5rem; }
   .auth-title { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 400; margin-bottom: 0.5rem; }
   .auth-title em { font-style: italic; color: var(--accent); }
@@ -58,11 +84,11 @@
   .google-btn { padding: 0.875rem; background: var(--bg2); color: var(--text); border: 0.5px solid var(--border2); border-radius: var(--radius-sm); font-family: 'Epilogue', sans-serif; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.15s; }
   .google-btn:hover { background: var(--bg3); }
   .auth-switch { text-align: center; font-size: 13px; color: var(--text2); }
-  .auth-switch a { color: var(--accent); cursor: pointer; text-decoration: none; }
+  .auth-switch a { color: var(--accent); cursor: pointer; }
   .auth-error { font-size: 13px; color: var(--red-text); padding: 0.75rem 1rem; background: rgba(212,96,96,0.1); border: 0.5px solid rgba(212,96,96,0.3); border-radius: var(--radius-sm); display: none; }
   .auth-error.visible { display: block; }
 
-  /* PRICING AFTER SIGNUP */
+  /* PRICING */
   .pricing-page { max-width: 560px; margin: 3rem auto; padding: 0 1.5rem; }
   .pricing-page h2 { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 400; margin-bottom: 0.5rem; }
   .pricing-page h2 em { font-style: italic; color: var(--accent); }
@@ -70,7 +96,7 @@
   .pricing-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   .p-card { background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 1.5rem; cursor: pointer; transition: border-color 0.15s; }
   .p-card:hover { border-color: var(--accent2); }
-  .p-card.featured { border-color: var(--accent); }
+  .p-card.selected { border-color: var(--accent); }
   .p-card-tag { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text3); margin-bottom: 8px; }
   .p-card-tag.highlight { color: var(--accent); }
   .p-card-price { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 400; letter-spacing: -0.5px; margin-bottom: 4px; }
@@ -85,30 +111,10 @@
   .gift-input { flex: 1; padding: 0.75rem 1rem; background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'Epilogue', sans-serif; font-size: 14px; }
   .gift-input:focus { outline: none; border-color: var(--border2); }
   .gift-input::placeholder { color: var(--text3); }
-  .gift-btn { padding: 0.75rem 1.25rem; background: var(--bg3); border: 0.5px solid var(--border2); border-radius: var(--radius-sm); color: var(--text2); font-family: 'Epilogue', sans-serif; font-size: 13px; cursor: pointer; white-space: nowrap; }
+  .gift-btn { padding: 0.75rem 1.25rem; background: var(--bg3); border: 0.5px solid var(--border2); border-radius: var(--radius-sm); color: var(--text2); font-family: 'Epilogue', sans-serif; font-size: 13px; cursor: pointer; }
   .gift-btn:hover { background: var(--bg2); }
 
-  /* MAIN APP */
-  .app-layout { display: flex; min-height: calc(100vh - 61px); }
-
-  /* SIDEBAR */
-  .sidebar { width: 260px; flex-shrink: 0; border-right: 0.5px solid var(--border); background: var(--bg2); display: flex; flex-direction: column; transition: transform 0.2s; }
-  .sidebar-top { padding: 1.25rem; flex: 1; overflow-y: auto; }
-  .sidebar-section { margin-bottom: 1.5rem; }
-  .sidebar-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text3); margin-bottom: 0.75rem; }
-  .sidebar-item { padding: 0.625rem 0.75rem; border-radius: var(--radius-sm); cursor: pointer; font-size: 13px; color: var(--text2); transition: background 0.15s; display: flex; flex-direction: column; gap: 2px; }
-  .sidebar-item:hover { background: var(--bg3); color: var(--text); }
-  .sidebar-item.active { background: var(--bg3); color: var(--text); }
-  .sidebar-item-date { font-size: 11px; color: var(--text3); }
-  .sidebar-empty { font-size: 13px; color: var(--text3); font-weight: 300; line-height: 1.5; padding: 0.5rem 0; }
-  .sidebar-bottom { padding: 1rem 1.25rem; border-top: 0.5px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
-  .sidebar-footer-btn { background: none; border: none; color: var(--text3); font-family: 'Epilogue', sans-serif; font-size: 13px; cursor: pointer; text-align: left; padding: 0.375rem 0.5rem; border-radius: var(--radius-sm); transition: color 0.15s, background 0.15s; }
-  .sidebar-footer-btn:hover { color: var(--text2); background: var(--bg3); }
-
-  /* MAIN CONTENT */
-  .main-content { flex: 1; overflow-y: auto; }
-
-  /* HERO + FORM */
+  /* MAIN */
   .hero { max-width: 620px; margin: 0 auto; padding: 3rem 2rem 2rem; text-align: center; }
   .hero h1 { font-family: 'Playfair Display', serif; font-size: 40px; font-weight: 400; line-height: 1.12; letter-spacing: -1.5px; margin-bottom: 1rem; }
   .hero h1 em { font-style: italic; color: var(--accent); }
@@ -120,6 +126,9 @@
   textarea { width: 100%; padding: 1rem 1.125rem; background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: 'Epilogue', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.7; resize: vertical; transition: border-color 0.15s; }
   textarea:focus { outline: none; border-color: var(--border2); }
   textarea::placeholder { color: var(--text3); }
+  .song-title-input { width: 100%; padding: 0.875rem 1rem; background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'Epilogue', sans-serif; font-size: 14px; }
+  .song-title-input:focus { outline: none; border-color: var(--border2); }
+  .song-title-input::placeholder { color: var(--text3); }
   .upload-zone { border: 0.5px dashed var(--border2); border-radius: var(--radius); padding: 1.75rem; text-align: center; cursor: pointer; position: relative; transition: background 0.15s; }
   .upload-zone:hover { background: var(--bg2); }
   .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
@@ -127,10 +136,8 @@
   .upload-main { font-size: 14px; color: var(--text2); }
   .upload-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
   .file-chip { display: none; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); padding: 0.625rem 0.875rem; background: var(--bg2); border-radius: var(--radius-sm); border: 0.5px solid var(--border); }
-  .song-title-row { display: flex; gap: 8px; }
-  .song-title-input { flex: 1; padding: 0.875rem 1rem; background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'Epilogue', sans-serif; font-size: 14px; }
-  .song-title-input:focus { outline: none; border-color: var(--border2); }
-  .song-title-input::placeholder { color: var(--text3); }
+  .privacy-note { font-size: 12px; color: var(--text3); display: flex; align-items: flex-start; gap: 6px; padding: 0.75rem 1rem; background: var(--bg2); border-radius: var(--radius-sm); border: 0.5px solid var(--border); line-height: 1.5; }
+  .privacy-note a { color: var(--accent2); text-decoration: none; cursor: pointer; }
   .btn-primary { padding: 1rem 2rem; background: var(--accent); color: #0e0e0e; border: none; border-radius: var(--radius); font-family: 'Epilogue', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.15s; margin-top: 0.5rem; }
   .btn-primary:hover { opacity: 0.88; }
   .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
@@ -195,11 +202,7 @@
   .preview-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; padding-bottom: 0.5rem; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; gap: 6px; }
   .preview-label::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; }
 
-  /* PRIVACY */
-  .privacy-note { font-size: 12px; color: var(--text3); display: flex; align-items: flex-start; gap: 6px; padding: 0.75rem 1rem; background: var(--bg2); border-radius: var(--radius-sm); border: 0.5px solid var(--border); line-height: 1.5; }
-  .privacy-note a { color: var(--accent2); text-decoration: none; }
-
-  /* SETTINGS PANEL */
+  /* SETTINGS */
   .settings-panel { display: none; max-width: 480px; margin: 2rem auto; padding: 0 1.5rem 4rem; }
   .settings-panel.visible { display: block; }
   .settings-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 400; margin-bottom: 1.5rem; }
@@ -215,16 +218,38 @@
   .logout-btn { margin-top: 1rem; padding: 0.75rem 1.5rem; background: none; border: 0.5px solid var(--border2); border-radius: var(--radius-sm); color: var(--red-text); font-family: 'Epilogue', sans-serif; font-size: 14px; cursor: pointer; transition: background 0.15s; }
   .logout-btn:hover { background: rgba(212,96,96,0.1); }
 
-  /* ERROR */
+  /* TOAST + ERROR */
   .error-box { display: none; max-width: 680px; margin: 0 auto 1rem; padding: 0.875rem 1.25rem; background: rgba(212,96,96,0.1); border: 0.5px solid rgba(212,96,96,0.3); border-radius: var(--radius); font-size: 14px; color: var(--red-text); }
   .error-box.visible { display: block; }
-
-  /* TOAST */
-  .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--radius-sm); padding: 0.75rem 1.5rem; font-size: 14px; color: var(--text); z-index: 999; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+  .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--radius-sm); padding: 0.75rem 1.5rem; font-size: 14px; color: var(--text); z-index: 999; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; }
   .toast.visible { opacity: 1; }
 </style>
 </head>
 <body>
+
+<!-- HAMBURGER -->
+<button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+  <span></span><span></span><span></span>
+</button>
+
+<!-- SIDEBAR BACKDROP -->
+<div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Portfolio</div>
+      <div id="portfolio-list">
+        <div class="sidebar-empty">Sign in to save and view your feedback history.</div>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar-bottom">
+    <button class="sidebar-footer-btn" onclick="closeSidebar(); showSettings();">⚙ Settings</button>
+    <button class="sidebar-footer-btn" id="sidebar-auth-btn" onclick="closeSidebar(); showPage('signup');">→ Sign up free</button>
+  </div>
+</div>
 
 <nav>
   <div class="logo" onclick="goHome()">Co<em>write</em></div>
@@ -238,91 +263,52 @@
 <div class="toast" id="toast"></div>
 <div class="error-box" id="error-box"></div>
 
-<!-- SIGNUP PAGE -->
+<!-- SIGNUP -->
 <div class="page" id="page-signup">
   <div class="auth-wrap">
     <div class="auth-title">Join <em>CoWrite</em></div>
     <div class="auth-sub">Create your account to save feedback, track your progress, and unlock the full experience.</div>
     <div class="auth-error" id="signup-error"></div>
     <div class="auth-form">
-      <div class="input-field">
-        <div class="input-label">Full name</div>
-        <input type="text" id="signup-name" placeholder="Your name" />
-      </div>
-      <div class="input-field">
-        <div class="input-label">Email</div>
-        <input type="email" id="signup-email" placeholder="you@example.com" />
-      </div>
-      <div class="input-field">
-        <div class="input-label">Phone <span style="font-weight:300;text-transform:none;letter-spacing:0">— optional</span></div>
-        <input type="tel" id="signup-phone" placeholder="+61 400 000 000" />
-      </div>
-      <div class="input-field">
-        <div class="input-label">Password</div>
-        <input type="password" id="signup-password" placeholder="At least 8 characters" />
-      </div>
-      <div class="checkbox-row">
-        <input type="checkbox" id="signup-notifications" />
-        <label class="checkbox-label" for="signup-notifications">Send me encouragement and tips to keep improving my songwriting</label>
-      </div>
+      <div class="input-field"><div class="input-label">Full name</div><input type="text" id="signup-name" placeholder="Your name" /></div>
+      <div class="input-field"><div class="input-label">Email</div><input type="email" id="signup-email" placeholder="you@example.com" /></div>
+      <div class="input-field"><div class="input-label">Phone <span style="font-weight:300;text-transform:none;letter-spacing:0">— optional</span></div><input type="tel" id="signup-phone" placeholder="+61 400 000 000" /></div>
+      <div class="input-field"><div class="input-label">Password</div><input type="password" id="signup-password" placeholder="At least 8 characters" /></div>
+      <div class="checkbox-row"><input type="checkbox" id="signup-notifications" /><label class="checkbox-label" for="signup-notifications">Send me encouragement and tips to keep improving my songwriting</label></div>
       <button class="auth-btn" id="signup-btn" onclick="doSignup()">Create account →</button>
       <div class="auth-divider">or</div>
-      <button class="google-btn" onclick="doGoogle()">
-        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
-        Continue with Google
-      </button>
+      <button class="google-btn" onclick="doGoogle()"><svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z"/></svg>Continue with Google</button>
       <div class="auth-switch">Already have an account? <a onclick="showPage('login')">Log in</a></div>
     </div>
   </div>
 </div>
 
-<!-- LOGIN PAGE -->
+<!-- LOGIN -->
 <div class="page" id="page-login">
   <div class="auth-wrap">
     <div class="auth-title">Welcome <em>back</em></div>
     <div class="auth-sub">Log in to access your feedback history and continue where you left off.</div>
     <div class="auth-error" id="login-error"></div>
     <div class="auth-form">
-      <div class="input-field">
-        <div class="input-label">Email</div>
-        <input type="email" id="login-email" placeholder="you@example.com" />
-      </div>
-      <div class="input-field">
-        <div class="input-label">Password</div>
-        <input type="password" id="login-password" placeholder="Your password" />
-      </div>
+      <div class="input-field"><div class="input-label">Email</div><input type="email" id="login-email" placeholder="you@example.com" /></div>
+      <div class="input-field"><div class="input-label">Password</div><input type="password" id="login-password" placeholder="Your password" /></div>
       <button class="auth-btn" id="login-btn" onclick="doLogin()">Log in →</button>
       <div class="auth-divider">or</div>
-      <button class="google-btn" onclick="doGoogle()">
-        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
-        Continue with Google
-      </button>
+      <button class="google-btn" onclick="doGoogle()"><svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z"/></svg>Continue with Google</button>
       <div class="auth-switch">Don't have an account? <a onclick="showPage('signup')">Sign up</a></div>
     </div>
   </div>
 </div>
 
-<!-- PRICING AFTER SIGNUP -->
+<!-- PRICING -->
 <div class="page" id="page-pricing">
   <div class="pricing-page">
     <h2>Choose your <em>plan</em></h2>
     <p>Pick what works for you — or continue free and upgrade anytime.</p>
     <div class="pricing-cards">
-      <div class="p-card" id="pp-free" onclick="selectPricingPlan('free')">
-        <div class="p-card-tag">Free</div>
-        <div class="p-card-price">$0</div>
-        <div class="p-card-desc">Preview feedback on every song — scores and overall verdict.</div>
-      </div>
-      <div class="p-card" id="pp-single" onclick="selectPricingPlan('single')">
-        <div class="p-card-tag">One song</div>
-        <div class="p-card-price">$2.99<span> once</span></div>
-        <div class="p-card-desc">Full deep analysis on one song. No commitment.</div>
-      </div>
-      <div class="p-card featured" id="pp-monthly" onclick="selectPricingPlan('monthly')">
-        <div class="p-card-tag highlight">Best value</div>
-        <div class="p-card-price">$9.99<span>/mo</span></div>
-        <div class="p-card-desc">Unlimited analyses, portfolio organisation, cancel anytime.</div>
-      </div>
+      <div class="p-card" id="pp-free" onclick="selectPricingPlan('free')"><div class="p-card-tag">Free</div><div class="p-card-price">$0</div><div class="p-card-desc">Preview feedback on every song — scores and overall verdict.</div></div>
+      <div class="p-card" id="pp-single" onclick="selectPricingPlan('single')"><div class="p-card-tag">One song</div><div class="p-card-price">$2.99<span> once</span></div><div class="p-card-desc">Full deep analysis on one song. No commitment.</div></div>
+      <div class="p-card" id="pp-monthly" onclick="selectPricingPlan('monthly')"><div class="p-card-tag highlight">Best value</div><div class="p-card-price">$9.99<span>/mo</span></div><div class="p-card-desc">Unlimited analyses, portfolio organisation, cancel anytime.</div></div>
     </div>
     <button class="pricing-continue" id="pricing-continue-btn" onclick="continuePricing()">Continue →</button>
     <a class="pricing-skip" onclick="skipPricing()">Continue free for now</a>
@@ -335,86 +321,41 @@
 
 <!-- MAIN APP -->
 <div class="page active" id="page-app">
-  <div class="app-layout">
-
-    <!-- SIDEBAR -->
-    <div class="sidebar" id="sidebar">
-      <div class="sidebar-top">
-        <div class="sidebar-section">
-          <div class="sidebar-label">Portfolio</div>
-          <div id="portfolio-list">
-            <div class="sidebar-empty">Sign in to save and view your feedback history.</div>
-          </div>
-        </div>
-      </div>
-      <div class="sidebar-bottom">
-        <button class="sidebar-footer-btn" onclick="showSettings()">⚙ Settings</button>
-        <button class="sidebar-footer-btn" id="sidebar-auth-btn" onclick="showPage('signup')">→ Sign up free</button>
-      </div>
+  <div id="input-view">
+    <div class="hero">
+      <h1>Feedback that <em>actually</em><br>makes you better.</h1>
+      <p>Paste your lyrics, drop a rough recording, and tell us what you were going for. Get honest, specific notes — the kind a great co-writer would give.</p>
     </div>
-
-    <!-- MAIN -->
-    <div class="main-content">
-
-      <div id="input-view">
-        <div class="hero">
-          <h1>Feedback that <em>actually</em><br>makes you better.</h1>
-          <p>Paste your lyrics, drop a rough recording, and tell us what you were going for. Get honest, specific notes — the kind a great co-writer would give.</p>
-        </div>
-        <div class="form-wrap">
-          <div class="field">
-            <label class="field-label">Song title <span class="opt">— optional</span></label>
-            <input class="song-title-input" id="song-title" placeholder="Untitled" />
-          </div>
-          <div class="field">
-            <label class="field-label">Lyrics</label>
-            <textarea id="lyrics" rows="10" placeholder="Paste your full lyrics here..."></textarea>
-          </div>
-          <div class="field">
-            <label class="field-label">Recording <span class="opt">— voice memo or rough demo</span></label>
-            <div class="upload-zone" id="upload-zone">
-              <input type="file" id="audio-file" accept="audio/*" />
-              <div class="upload-icon">↑</div>
-              <div class="upload-main">Drop your recording here or click to browse</div>
-              <div class="upload-sub">MP3, WAV, M4A up to 25MB</div>
-            </div>
-            <div class="file-chip" id="file-chip"><span>♪</span><span id="file-name-display"></span></div>
-            <div class="privacy-note">🔒 Your recording is used only to inform the feedback and is never stored or shared. <a href="#" onclick="showPrivacy()">Privacy policy</a></div>
-          </div>
-          <div class="field">
-            <label class="field-label">Your intent</label>
-            <textarea id="intent" rows="4" placeholder="What were you going for? What mood, genre, or feeling did you want to express?"></textarea>
-          </div>
-          <button class="btn-primary" id="analyse-btn" onclick="analyse()">Analyse my song →</button>
-        </div>
+    <div class="form-wrap">
+      <div class="field"><label class="field-label">Song title <span class="opt">— optional</span></label><input class="song-title-input" id="song-title" placeholder="Untitled" /></div>
+      <div class="field"><label class="field-label">Lyrics</label><textarea id="lyrics" rows="10" placeholder="Paste your full lyrics here..."></textarea></div>
+      <div class="field">
+        <label class="field-label">Recording <span class="opt">— voice memo or rough demo</span></label>
+        <div class="upload-zone" id="upload-zone"><input type="file" id="audio-file" accept="audio/*" /><div class="upload-icon">↑</div><div class="upload-main">Drop your recording here or click to browse</div><div class="upload-sub">MP3, WAV, M4A up to 25MB</div></div>
+        <div class="file-chip" id="file-chip"><span>♪</span><span id="file-name-display"></span></div>
+        <div class="privacy-note">🔒 Your recording is used only to inform the feedback and is never stored or shared. <a onclick="showToast('Recordings are processed in memory only and never saved to any server.')">Privacy policy</a></div>
       </div>
-
-      <div class="loading-view" id="loading-view">
-        <div class="spinner"></div>
-        <div class="loading-text" id="loading-text">Reading your lyrics...</div>
-        <div class="loading-sub">Going deep. This takes 20–40 seconds.</div>
-      </div>
-
-      <div class="results-view" id="results-view"></div>
-
-      <div class="settings-panel" id="settings-panel">
-        <div class="settings-title">Settings</div>
-        <div class="settings-section">
-          <div class="settings-section-title">Account</div>
-          <div class="settings-row"><span class="settings-row-label">Email</span><span class="settings-row-value" id="settings-email">—</span></div>
-          <div class="settings-row"><span class="settings-row-label">Name</span><span class="settings-row-value" id="settings-name">—</span></div>
-          <div class="settings-row"><span class="settings-row-label">Plan</span><span class="settings-row-value" id="settings-plan">—</span></div>
-        </div>
-        <div class="settings-section">
-          <div class="settings-section-title">Privacy</div>
-          <div class="settings-row"><span class="settings-row-label">Voice recordings</span><span class="settings-row-value">Never stored or shared</span></div>
-          <div class="settings-row"><span class="settings-row-label">Lyrics</span><span class="settings-row-value">Saved to your account only</span></div>
-          <div class="settings-row"><span class="settings-row-label">Data deletion</span><span class="settings-row-value">Contact support to delete all data</span></div>
-        </div>
-        <button class="logout-btn" onclick="doLogout()">Log out</button>
-      </div>
-
+      <div class="field"><label class="field-label">Your intent</label><textarea id="intent" rows="4" placeholder="What were you going for? What mood, genre, or feeling did you want to express?"></textarea></div>
+      <button class="btn-primary" id="analyse-btn" onclick="analyse()">Analyse my song →</button>
     </div>
+  </div>
+  <div class="loading-view" id="loading-view"><div class="spinner"></div><div class="loading-text" id="loading-text">Reading your lyrics...</div><div class="loading-sub">Going deep. This takes 20–40 seconds.</div></div>
+  <div class="results-view" id="results-view"></div>
+  <div class="settings-panel" id="settings-panel">
+    <div class="settings-title">Settings</div>
+    <div class="settings-section">
+      <div class="settings-section-title">Account</div>
+      <div class="settings-row"><span class="settings-row-label">Email</span><span class="settings-row-value" id="settings-email">—</span></div>
+      <div class="settings-row"><span class="settings-row-label">Name</span><span class="settings-row-value" id="settings-name">—</span></div>
+      <div class="settings-row"><span class="settings-row-label">Plan</span><span class="settings-row-value" id="settings-plan">—</span></div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">Privacy</div>
+      <div class="settings-row"><span class="settings-row-label">Voice recordings</span><span class="settings-row-value">Never stored or shared</span></div>
+      <div class="settings-row"><span class="settings-row-label">Lyrics</span><span class="settings-row-value">Saved to your account only</span></div>
+      <div class="settings-row"><span class="settings-row-label">Data deletion</span><span class="settings-row-value">Contact support to delete all data</span></div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">Log out</button>
   </div>
 </div>
 
@@ -423,65 +364,53 @@ const STRIPE_KEY = 'pk_test_51TZJWzPldDFckhb1y6jt5faWXpYYjmwbagJ1WsjrMlYaRbf1sRs
 const PRICE_MONTHLY = 'price_1TZJdlPldDFckhb1lO6B13Ye';
 const PRICE_SINGLE = 'price_1TZJioPldDFckhb1a0PIoLXF';
 const stripe = Stripe(STRIPE_KEY);
+let currentUser = null, currentToken = null, selectedPlan = null, fullResultData = null, selectedPricingPlan = null;
 
-let currentUser = null;
-let currentToken = null;
-let selectedPlan = null;
-let fullResultData = null;
-let selectedPricingPlan = null;
-
-// --- SESSION ---
 function loadSession() {
-  const u = localStorage.getItem('cw_user');
-  const t = localStorage.getItem('cw_token');
-  if (u && t) {
-    currentUser = JSON.parse(u);
-    currentToken = t;
-    updateNav();
-    loadPortfolio();
-  }
+  const u = localStorage.getItem('cw_user'), t = localStorage.getItem('cw_token');
+  if (u && t) { currentUser = JSON.parse(u); currentToken = t; updateNav(); loadPortfolio(); }
 }
 
 function saveSession(user, token) {
-  currentUser = user;
-  currentToken = token;
+  currentUser = user; currentToken = token;
   localStorage.setItem('cw_user', JSON.stringify(user));
   localStorage.setItem('cw_token', token);
   updateNav();
 }
 
 function clearSession() {
-  currentUser = null;
-  currentToken = null;
-  localStorage.removeItem('cw_user');
-  localStorage.removeItem('cw_token');
+  currentUser = null; currentToken = null;
+  localStorage.removeItem('cw_user'); localStorage.removeItem('cw_token');
 }
 
 function updateNav() {
   const nr = document.getElementById('nav-right');
+  const sab = document.getElementById('sidebar-auth-btn');
   if (currentUser) {
-    nr.innerHTML = `
-      <span class="nav-user">${currentUser.email}</span>
-      <button class="nav-btn" onclick="showSettings()">Settings</button>
-    `;
-    document.getElementById('sidebar-auth-btn').textContent = '+ New analysis';
-    document.getElementById('sidebar-auth-btn').onclick = goHome;
+    nr.innerHTML = `<span class="nav-user">${currentUser.email}</span><button class="nav-btn" onclick="showSettings()">Settings</button>`;
+    sab.textContent = '+ New analysis'; sab.onclick = () => { closeSidebar(); goHome(); };
   } else {
-    nr.innerHTML = `
-      <div class="nav-badge">Beta</div>
-      <button class="nav-btn" onclick="showPage('login')">Log in</button>
-      <button class="nav-btn primary" onclick="showPage('signup')">Sign up</button>
-    `;
-    document.getElementById('sidebar-auth-btn').textContent = '→ Sign up free';
-    document.getElementById('sidebar-auth-btn').onclick = () => showPage('signup');
+    nr.innerHTML = `<div class="nav-badge">Beta</div><button class="nav-btn" onclick="showPage('login')">Log in</button><button class="nav-btn primary" onclick="showPage('signup')">Sign up</button>`;
+    sab.textContent = '→ Sign up free'; sab.onclick = () => { closeSidebar(); showPage('signup'); };
   }
 }
 
-// --- PAGES ---
+function toggleSidebar() {
+  const s = document.getElementById('sidebar'), b = document.getElementById('sidebar-backdrop'), h = document.getElementById('hamburger');
+  s.classList.toggle('open'); b.classList.toggle('visible'); h.classList.toggle('open');
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-backdrop').classList.remove('visible');
+  document.getElementById('hamburger').classList.remove('open');
+}
+
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
   document.getElementById('settings-panel').classList.remove('visible');
+  closeSidebar();
 }
 
 function goHome() {
@@ -494,8 +423,7 @@ function showSettings() {
   document.getElementById('input-view').style.display = 'none';
   document.getElementById('results-view').classList.remove('visible');
   document.getElementById('loading-view').classList.remove('visible');
-  const panel = document.getElementById('settings-panel');
-  panel.classList.add('visible');
+  document.getElementById('settings-panel').classList.add('visible');
   if (currentUser) {
     document.getElementById('settings-email').textContent = currentUser.email || '—';
     document.getElementById('settings-name').textContent = currentUser.user_metadata?.full_name || '—';
@@ -504,11 +432,16 @@ function showSettings() {
   }
 }
 
-function showPrivacy() {
-  showToast('Your recordings are processed in memory only and never stored on our servers.');
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('visible');
+  setTimeout(() => t.classList.remove('visible'), 3500);
 }
 
-// --- AUTH ---
+function showError(msg) {
+  const b = document.getElementById('error-box'); b.textContent = msg; b.classList.add('visible');
+  setTimeout(() => b.classList.remove('visible'), 6000);
+}
+
 async function doSignup() {
   const name = document.getElementById('signup-name').value.trim();
   const email = document.getElementById('signup-email').value.trim();
@@ -517,168 +450,98 @@ async function doSignup() {
   const notifications = document.getElementById('signup-notifications').checked;
   const errEl = document.getElementById('signup-error');
   errEl.classList.remove('visible');
-
   if (!name || !email || !password) { errEl.textContent = 'Please fill in name, email and password.'; errEl.classList.add('visible'); return; }
   if (password.length < 8) { errEl.textContent = 'Password must be at least 8 characters.'; errEl.classList.add('visible'); return; }
-
-  const btn = document.getElementById('signup-btn');
-  btn.disabled = true; btn.textContent = 'Creating account...';
-
+  const btn = document.getElementById('signup-btn'); btn.disabled = true; btn.textContent = 'Creating account...';
   try {
-    const r = await fetch('/api/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'signup', email, password, full_name: name, phone, notifications })
-    });
+    const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'signup', email, password, full_name: name, phone, notifications }) });
     const d = await r.json();
     if (d.error) { errEl.textContent = d.error; errEl.classList.add('visible'); return; }
     saveSession({ ...d.user, plan: 'free' }, d.access_token);
     showPage('pricing');
-  } catch(e) {
-    errEl.textContent = 'Something went wrong. Please try again.';
-    errEl.classList.add('visible');
-  } finally {
-    btn.disabled = false; btn.textContent = 'Create account →';
-  }
+  } catch(e) { errEl.textContent = 'Something went wrong.'; errEl.classList.add('visible'); }
+  finally { btn.disabled = false; btn.textContent = 'Create account →'; }
 }
 
 async function doLogin() {
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
-  const errEl = document.getElementById('login-error');
-  errEl.classList.remove('visible');
-
-  const btn = document.getElementById('login-btn');
-  btn.disabled = true; btn.textContent = 'Logging in...';
-
+  const errEl = document.getElementById('login-error'); errEl.classList.remove('visible');
+  const btn = document.getElementById('login-btn'); btn.disabled = true; btn.textContent = 'Logging in...';
   try {
-    const r = await fetch('/api/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'login', email, password })
-    });
+    const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'login', email, password }) });
     const d = await r.json();
     if (d.error) { errEl.textContent = d.error; errEl.classList.add('visible'); return; }
-    saveSession(d.user, d.access_token);
-    showPage('app');
-    loadPortfolio();
-  } catch(e) {
-    errEl.textContent = 'Something went wrong. Please try again.';
-    errEl.classList.add('visible');
-  } finally {
-    btn.disabled = false; btn.textContent = 'Log in →';
-  }
+    saveSession(d.user, d.access_token); showPage('app'); loadPortfolio();
+  } catch(e) { errEl.textContent = 'Something went wrong.'; errEl.classList.add('visible'); }
+  finally { btn.disabled = false; btn.textContent = 'Log in →'; }
 }
 
 async function doGoogle() {
-  const r = await fetch('/api/auth', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'google', redirect: window.location.origin })
-  });
-  const d = await r.json();
-  if (d.url) window.location.href = d.url;
+  const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'google', redirect: window.location.origin }) });
+  const d = await r.json(); if (d.url) window.location.href = d.url;
 }
 
 function doLogout() {
-  clearSession();
-  updateNav();
-  showPage('app');
+  clearSession(); updateNav(); showPage('app');
   document.getElementById('portfolio-list').innerHTML = '<div class="sidebar-empty">Sign in to save and view your feedback history.</div>';
   document.getElementById('input-view').style.display = 'block';
   document.getElementById('settings-panel').classList.remove('visible');
   showToast('Logged out.');
 }
 
-// --- PRICING ---
 function selectPricingPlan(plan) {
   selectedPricingPlan = plan;
-  document.querySelectorAll('.p-card').forEach(c => c.style.borderColor = '');
-  document.getElementById('pp-' + plan).style.borderColor = 'var(--accent)';
+  document.querySelectorAll('.p-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('pp-' + plan).classList.add('selected');
   const btn = document.getElementById('pricing-continue-btn');
-  if (plan === 'free') {
-    btn.textContent = 'Continue free →';
-  } else {
-    btn.textContent = 'Continue to payment →';
-  }
+  btn.textContent = plan === 'free' ? 'Continue free →' : 'Continue to payment →';
   btn.classList.add('visible');
 }
 
 async function continuePricing() {
-  if (!selectedPricingPlan || selectedPricingPlan === 'free') {
-    showPage('app');
-    loadPortfolio();
-    return;
-  }
+  if (!selectedPricingPlan || selectedPricingPlan === 'free') { showPage('app'); loadPortfolio(); return; }
   const priceId = selectedPricingPlan === 'monthly' ? PRICE_MONTHLY : PRICE_SINGLE;
   try {
-    const { error } = await stripe.redirectToCheckout({
-      lineItems: [{ price: priceId, quantity: 1 }],
-      mode: selectedPricingPlan === 'monthly' ? 'subscription' : 'payment',
-      successUrl: window.location.origin + '/?paid=true',
-      cancelUrl: window.location.origin + '/?page=pricing',
-    });
+    const { error } = await stripe.redirectToCheckout({ lineItems: [{ price: priceId, quantity: 1 }], mode: selectedPricingPlan === 'monthly' ? 'subscription' : 'payment', successUrl: window.location.origin + '/?paid=true', cancelUrl: window.location.origin + '/?page=pricing' });
     if (error) showToast(error.message);
   } catch(e) { showToast('Payment failed to load.'); }
 }
 
-function skipPricing() {
-  showPage('app');
-  loadPortfolio();
-}
+function skipPricing() { showPage('app'); loadPortfolio(); }
 
 async function redeemGift() {
   if (!currentUser) { showToast('Please log in first.'); return; }
-  const key = document.getElementById('gift-key-input').value.trim();
-  if (!key) return;
-  const r = await fetch('/api/redeem', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` },
-    body: JSON.stringify({ key, user_id: currentUser.id })
-  });
+  const key = document.getElementById('gift-key-input').value.trim(); if (!key) return;
+  const r = await fetch('/api/redeem', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` }, body: JSON.stringify({ key, user_id: currentUser.id }) });
   const d = await r.json();
   if (d.error) { showToast('Invalid or already used key.'); return; }
-  currentUser.plan = d.plan;
-  localStorage.setItem('cw_user', JSON.stringify(currentUser));
-  showToast(`Key redeemed! Plan upgraded to ${d.plan}.`);
-  skipPricing();
+  currentUser.plan = d.plan; localStorage.setItem('cw_user', JSON.stringify(currentUser));
+  showToast(`Key redeemed! Plan upgraded to ${d.plan}.`); skipPricing();
 }
 
-// --- PORTFOLIO ---
 async function loadPortfolio() {
   if (!currentUser || !currentToken) return;
   try {
-    const r = await fetch(`/api/history?user_id=${currentUser.id}`, {
-      headers: { 'Authorization': `Bearer ${currentToken}` }
-    });
+    const r = await fetch(`/api/history?user_id=${currentUser.id}`, { headers: { 'Authorization': `Bearer ${currentToken}` } });
     const items = await r.json();
     const list = document.getElementById('portfolio-list');
-    if (!items.length) {
-      list.innerHTML = '<div class="sidebar-empty">No analyses yet. Submit your first song to get started.</div>';
-      return;
-    }
-    list.innerHTML = items.map(item => `
-      <div class="sidebar-item" onclick="loadHistoryItem('${item.id}')">
-        <span>${item.song_title || 'Untitled'}</span>
-        <span class="sidebar-item-date">${new Date(item.created_at).toLocaleDateString()}</span>
-      </div>
-    `).join('');
+    if (!Array.isArray(items) || !items.length) { list.innerHTML = '<div class="sidebar-empty">No analyses yet. Submit your first song to get started.</div>'; return; }
+    list.innerHTML = items.map(item => `<div class="sidebar-item" onclick="loadHistoryItem('${item.id}')"><span>${item.song_title || 'Untitled'}</span><span class="sidebar-item-date">${new Date(item.created_at).toLocaleDateString()}</span></div>`).join('');
     list._items = items;
   } catch(e) {}
 }
 
 function loadHistoryItem(id) {
   const list = document.getElementById('portfolio-list');
-  const item = list._items?.find(i => i.id === id);
-  if (!item) return;
+  const item = list._items?.find(i => i.id === id); if (!item) return;
   fullResultData = item.feedback;
   document.getElementById('input-view').style.display = 'none';
   document.getElementById('settings-panel').classList.remove('visible');
-  const isPaid = currentUser?.plan !== 'free';
-  renderResults(item.feedback, isPaid);
+  renderResults(item.feedback, currentUser?.plan !== 'free');
+  closeSidebar();
 }
 
-// --- ANALYSE ---
 document.getElementById('audio-file').addEventListener('change', function() {
   if (this.files && this.files[0]) {
     document.getElementById('file-name-display').textContent = this.files[0].name;
@@ -687,57 +550,29 @@ document.getElementById('audio-file').addEventListener('change', function() {
   }
 });
 
-function showError(msg) {
-  const box = document.getElementById('error-box');
-  box.textContent = msg;
-  box.classList.add('visible');
-  setTimeout(() => box.classList.remove('visible'), 6000);
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('visible');
-  setTimeout(() => t.classList.remove('visible'), 3000);
-}
-
 async function analyse() {
   const lyrics = document.getElementById('lyrics').value.trim();
   const intent = document.getElementById('intent').value.trim();
   const songTitle = document.getElementById('song-title').value.trim() || 'Untitled';
   if (!lyrics) { showError('Please paste your lyrics first.'); return; }
   if (!intent) { showError('Tell us what you were going for — this shapes the feedback.'); return; }
-
   document.getElementById('input-view').style.display = 'none';
   document.getElementById('settings-panel').classList.remove('visible');
   document.getElementById('loading-view').classList.add('visible');
   document.getElementById('analyse-btn').disabled = true;
-
   const msgs = ['Reading your lyrics line by line...','Mapping the emotional arc...','Finding where attention drops...','Measuring against your intent...','Putting the report together...'];
-  let mi = 0;
-  const ltEl = document.getElementById('loading-text');
+  let mi = 0; const ltEl = document.getElementById('loading-text');
   const ltInt = setInterval(() => { mi = (mi+1) % msgs.length; ltEl.textContent = msgs[mi]; }, 3500);
-
   try {
-    const res = await fetch('/api/analyse', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ lyrics, intent })
-    });
+    const res = await fetch('/api/analyse', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ lyrics, intent }) });
     clearInterval(ltInt);
     if (!res.ok) throw new Error('API error');
     fullResultData = await res.json();
     if (!fullResultData.scores || !fullResultData.preview || !fullResultData.sections) throw new Error('Bad response');
-
     const isPaid = currentUser?.plan !== 'free';
     renderResults(fullResultData, isPaid);
-
     if (currentUser && currentToken) {
-      await fetch('/api/history', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` },
-        body: JSON.stringify({ user_id: currentUser.id, lyrics, intent, feedback: fullResultData, song_title: songTitle })
-      });
+      await fetch('/api/history', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` }, body: JSON.stringify({ user_id: currentUser.id, lyrics, intent, feedback: fullResultData, song_title: songTitle }) });
       loadPortfolio();
     }
   } catch(err) {
@@ -749,7 +584,6 @@ async function analyse() {
   }
 }
 
-// --- RENDER ---
 function dotClass(s) { return s === 'strong' ? 'dot-green' : s === 'needs work' ? 'dot-red' : 'dot-amber'; }
 function pill(s) {
   if (s === 'strong') return `<span class="status-pill pill-strong">Strong</span>`;
@@ -760,79 +594,16 @@ function pill(s) {
 function renderResults(data, unlocked) {
   document.getElementById('loading-view').classList.remove('visible');
   const view = document.getElementById('results-view');
-
-  const scoresHtml = Object.entries(data.scores).map(([k,s]) => `
-    <div class="score-card">
-      <div class="score-label">${k.replace('_',' ')}</div>
-      <div class="score-row"><div class="score-dot ${dotClass(s.status)}"></div><div class="score-val">${s.value}<span>/10</span></div></div>
-    </div>`).join('');
-
-  const previewHtml = `
-    <div class="preview-label">Free preview</div>
-    <div class="section-card">
-      <div class="section-head"><span class="section-icon">◈</span><span class="section-name">Overall verdict</span>${pill(data.scores.goal_alignment.status)}</div>
-      <div class="section-body">
-        <div class="note"><div class="note-text">${data.preview.verdict}</div></div>
-        <div class="note"><div class="quoted-line">${data.preview.top_line}</div></div>
-        <div class="note"><div class="direction"><span class="direction-arrow">→</span>${data.preview.weak_spot}</div></div>
-      </div>
-    </div>`;
-
+  const scoresHtml = Object.entries(data.scores).map(([k,s]) => `<div class="score-card"><div class="score-label">${k.replace('_',' ')}</div><div class="score-row"><div class="score-dot ${dotClass(s.status)}"></div><div class="score-val">${s.value}<span>/10</span></div></div></div>`).join('');
+  const previewHtml = `<div class="preview-label">Free preview</div><div class="section-card"><div class="section-head"><span class="section-icon">◈</span><span class="section-name">Overall verdict</span>${pill(data.scores.goal_alignment.status)}</div><div class="section-body"><div class="note"><div class="note-text">${data.preview.verdict}</div></div><div class="note"><div class="quoted-line">${data.preview.top_line}</div></div><div class="note"><div class="direction"><span class="direction-arrow">→</span>${data.preview.weak_spot}</div></div></div></div>`;
   let sectionsHtml = '';
   if (unlocked) {
-    sectionsHtml = data.sections.map(sec => `
-      <div class="section-card">
-        <div class="section-head"><span class="section-icon">◈</span><span class="section-name">${sec.title}</span>${pill(sec.status)}</div>
-        <div class="section-body">${sec.notes.map(n => `
-          <div class="note">
-            ${n.quoted_line ? `<div class="quoted-line">"${n.quoted_line}"</div>` : ''}
-            <div class="note-text">${n.observation}</div>
-            ${n.direction ? `<div class="direction"><span class="direction-arrow">→</span>${n.direction}</div>` : ''}
-          </div>`).join('')}
-        </div>
-      </div>`).join('');
+    sectionsHtml = data.sections.map(sec => `<div class="section-card"><div class="section-head"><span class="section-icon">◈</span><span class="section-name">${sec.title}</span>${pill(sec.status)}</div><div class="section-body">${sec.notes.map(n => `<div class="note">${n.quoted_line ? `<div class="quoted-line">"${n.quoted_line}"</div>` : ''}<div class="note-text">${n.observation}</div>${n.direction ? `<div class="direction"><span class="direction-arrow">→</span>${n.direction}</div>` : ''}</div>`).join('')}</div></div>`).join('');
   } else {
-    const blurred = data.sections.map(sec => `
-      <div class="section-card" style="margin-bottom:8px">
-        <div class="section-head"><span class="section-icon">◈</span><span class="section-name">${sec.title}</span>${pill(sec.status)}</div>
-        <div class="section-body">
-          <div class="note-text" style="color:transparent;background:rgba(255,255,255,0.08);border-radius:4px;">████████████████████████████████████████████████████████████████████████████████████████████████</div>
-          <div class="direction" style="opacity:0.3"><span class="direction-arrow">→</span>████████████████████████████████████████████████</div>
-        </div>
-      </div>`).join('');
-    sectionsHtml = `
-      <div class="paywall-wrap">
-        <div class="paywall-blur">${blurred}</div>
-        <div class="paywall-overlay">
-          <div class="paywall-title">There's <em>a lot</em> more here.</div>
-          <div class="paywall-sub">Six deep sections covering your lyrics line by line, emotional arc, listener attention, melody, structure, and exactly how close you got to your goal.</div>
-          <div class="pricing-options">
-            <div class="pricing-card" id="pc-single" onclick="selectPlan('single')">
-              <div class="pricing-tag">One song</div>
-              <div class="pricing-price">$2.99<span> once</span></div>
-              <div class="pricing-desc">Full report for this song only</div>
-            </div>
-            <div class="pricing-card" id="pc-monthly" onclick="selectPlan('monthly')">
-              <div class="pricing-tag highlight">Best value</div>
-              <div class="pricing-price">$9.99<span>/mo</span></div>
-              <div class="pricing-desc">Unlimited analyses, cancel anytime</div>
-            </div>
-          </div>
-          <button class="unlock-btn" id="unlock-btn" onclick="checkout()">Unlock full report →</button>
-          <div style="font-size:12px;color:var(--text3);margin-top:-4px">Secure payment via Stripe</div>
-        </div>
-      </div>`;
+    const blurred = data.sections.map(sec => `<div class="section-card" style="margin-bottom:8px"><div class="section-head"><span class="section-icon">◈</span><span class="section-name">${sec.title}</span>${pill(sec.status)}</div><div class="section-body"><div class="note-text" style="color:transparent;background:rgba(255,255,255,0.08);border-radius:4px;">████████████████████████████████████████████████████████████████████████████████████████████████</div><div class="direction" style="opacity:0.3"><span class="direction-arrow">→</span>████████████████████████████████████████████████</div></div></div>`).join('');
+    sectionsHtml = `<div class="paywall-wrap"><div class="paywall-blur">${blurred}</div><div class="paywall-overlay"><div class="paywall-title">There's <em>a lot</em> more here.</div><div class="paywall-sub">Six deep sections covering your lyrics line by line, emotional arc, listener attention, melody, structure, and exactly how close you got to your goal.</div><div class="pricing-options"><div class="pricing-card" id="pc-single" onclick="selectPlan('single')"><div class="pricing-tag">One song</div><div class="pricing-price">$2.99<span> once</span></div><div class="pricing-desc">Full report for this song only</div></div><div class="pricing-card" id="pc-monthly" onclick="selectPlan('monthly')"><div class="pricing-tag highlight">Best value</div><div class="pricing-price">$9.99<span>/mo</span></div><div class="pricing-desc">Unlimited analyses, cancel anytime</div></div></div><button class="unlock-btn" id="unlock-btn" onclick="checkout()">Unlock full report →</button><div style="font-size:12px;color:var(--text3);margin-top:-4px">Secure payment via Stripe</div></div></div>`;
   }
-
-  view.innerHTML = `
-    <div class="results-header">
-      <div class="results-title">Your feedback</div>
-      <button class="btn-secondary" onclick="resetForm()">← Analyse another song</button>
-    </div>
-    <div class="scores-grid">${scoresHtml}</div>
-    ${previewHtml}
-    ${sectionsHtml}`;
-
+  view.innerHTML = `<div class="results-header"><div class="results-title">Your feedback</div><button class="btn-secondary" onclick="resetForm()">← Analyse another song</button></div><div class="scores-grid">${scoresHtml}</div>${previewHtml}${sectionsHtml}`;
   view.classList.add('visible');
   view.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -840,10 +611,8 @@ function renderResults(data, unlocked) {
 function selectPlan(plan) {
   selectedPlan = plan;
   document.querySelectorAll('.pricing-card').forEach(c => c.classList.remove('selected'));
-  const card = document.getElementById('pc-' + plan);
-  if (card) card.classList.add('selected');
-  const btn = document.getElementById('unlock-btn');
-  if (btn) btn.classList.add('visible');
+  const card = document.getElementById('pc-' + plan); if (card) card.classList.add('selected');
+  const btn = document.getElementById('unlock-btn'); if (btn) btn.classList.add('visible');
 }
 
 async function checkout() {
@@ -851,12 +620,7 @@ async function checkout() {
   if (!currentUser) { showPage('signup'); return; }
   const priceId = selectedPlan === 'monthly' ? PRICE_MONTHLY : PRICE_SINGLE;
   try {
-    const { error } = await stripe.redirectToCheckout({
-      lineItems: [{ price: priceId, quantity: 1 }],
-      mode: selectedPlan === 'monthly' ? 'subscription' : 'payment',
-      successUrl: window.location.origin + '/?paid=true',
-      cancelUrl: window.location.href,
-    });
+    const { error } = await stripe.redirectToCheckout({ lineItems: [{ price: priceId, quantity: 1 }], mode: selectedPlan === 'monthly' ? 'subscription' : 'payment', successUrl: window.location.origin + '/?paid=true', cancelUrl: window.location.href });
     if (error) showToast(error.message);
   } catch(e) { showToast('Payment failed to load.'); }
 }
@@ -877,7 +641,6 @@ function resetForm() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// --- INIT ---
 loadSession();
 if (window.location.search.includes('page=pricing')) showPage('pricing');
 </script>
