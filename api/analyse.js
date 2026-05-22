@@ -13,9 +13,7 @@ export default async function handler(req, res) {
     if (!lyrics || !intent) return res.status(400).json({ error: 'Missing lyrics or intent' });
  
     let content = [];
-    if (hasRecording) {
-      content.push({ type: 'text', text: `Recording uploaded: "${recordingName}". Factor in vocal delivery, melody, tone and energy.` });
-    }
+    
     content.push({ type: 'text', text: `LYRICS:\n${lyrics}\n\nINTENT:\n${intent}` });
  
     const system = `You are a brutally honest expert co-writer and music critic. Give specific feedback that only applies to THIS song.
