@@ -1,0 +1,55 @@
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+
+  const { action, email, password, full_name, phone, notifications } = req.body;
+  const SUPABASE_URL = process.env.SUPABASE_URL;
+  const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+
+  try {
+    if (action === 'signup') {
+      const r = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+        body: JSON.stringify({ email, password })
+      });
+      const d = await r.json();
+      if (d.error) return res.status(400).json({ error: d.error.message || d.error });
+      
+      const userId = d.user?.id;
+      if (userId) {
+        await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${d.access_token}`
+          },
+          body: JSON.stringify({ id: userId, full_name, phone, notifications: notifications || false, plan: 'free' })
+        });
+      }
+      return res.status(200).json({ user: d.user, session: d.session, access_token: d.access_token });
+    }
+
+    if (action === 'login') {
+      const r = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+        body: JSON.stringify({ email, password })
+      });
+      const d = await r.json();
+      if (d.error) return res.status(400).json({ error: d.error.message || d.error });
+      return res.status(200).json({ user: d.user, access_token: d.access_token });
+    }
+
+    if (action === 'google') {
+      return res.status(200).json({ url: `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${req.body.redirect}` });
+    }
+
+    return res.status(400).json({ error: 'Invalid action' });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+}
